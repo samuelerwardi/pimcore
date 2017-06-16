@@ -13,6 +13,8 @@ use Pimcore\Kernel;
 use Pimcore\Model\Document;
 use Pimcore\Model\Object;
 use Pimcore\Model\Tool\Setup;
+use Pimcore\Test\Kernel as TestKernel;
+use Symfony\Component\Debug\Debug;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Pimcore extends Module\Symfony
@@ -37,6 +39,9 @@ class Pimcore extends Module\Symfony
 
             // purge class directory on boot - depends on connect_db
             'purge_class_directory' => true,
+
+            // bundles to activate
+            'bundles' => []
         ]);
 
         parent::__construct($moduleContainer, $config);
@@ -97,13 +102,50 @@ class Pimcore extends Module\Symfony
         }
 
         require_once __DIR__ . '/../../../config/constants.php';
+        require_once __DIR__ . '/../../../config/autoload.php';
+
         $this->setupPimcoreDirectories();
 
-        $this->kernel = require_once __DIR__ . '/../../../config/startup.php';
-        $this->kernel->boot();
+        $env   = Config::getEnvironment();
+        $debug = \Pimcore::inDebugMode() || in_array(Config::getEnvironment(), ['dev', 'test']);
+
+        if ($debug) {
+            Debug::enable();
+        }
+
+        $kernel = $this->kernel = new TestKernel($env, $debug);
+        \Pimcore::setKernel($kernel);
+
+        /** @var TestKernel kernel */
+        $this->addTestBundles($kernel);
+
+        $kernel->boot();
 
         if ($this->config['cache_router'] === true) {
             $this->persistService('router', true);
+        }
+
+        return $kernel;
+    }
+
+    protected function addTestBundles(TestKernel $kernel)
+    {
+        if (!empty($this->config['bundles']) && is_array($this->config['bundles'])) {
+            $bundleClasses = $this->config['bundles'];
+
+            $bundles = [];
+            foreach ($bundleClasses as $bundleClass) {
+                if (!class_exists($bundleClass)) {
+                    throw new \RuntimeException(sprintf(
+                        '[PIMCORE] Trying to add bundle "%s" as defined in config, but the bundle class was not found',
+                        $bundleClass
+                    ));
+                }
+
+                $bundles[] = new $bundleClass;
+            }
+
+            $kernel->setTestBundles($bundles);
         }
     }
 

@@ -3,5 +3,7 @@ modules:
     enabled:
         - \Pimcore\Tests\Helper\Pimcore:
             connect_db: true
+            bundles:
+                - Pimcore\Bundle\EcommerceFrameworkBundle\PimcoreEcommerceFrameworkBundle
         - \Pimcore\Tests\Helper\ClassManager
         - \Pimcore\Tests\Helper\Ecommerce
