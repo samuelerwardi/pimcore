@@ -17,11 +17,6 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-
 interface ITracker
 {
-    public function __construct(ITrackingItemBuilder $trackingItemBuilder, EngineInterface $templatingEngine);
-
-    public function getTrackingItemBuilder(): ITrackingItemBuilder;
 }

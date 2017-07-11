@@ -17,7 +17,6 @@ declare(strict_types=1);
 
 namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
-use Pimcore\Google\Analytics;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
 abstract class Tracker implements ITracker
@@ -32,25 +31,44 @@ abstract class Tracker implements ITracker
      */
     protected $templatingEngine;
 
-    public function __construct(ITrackingItemBuilder $trackingItemBuilder, EngineInterface $templatingEngine)
+    /**
+     * @var string
+     */
+    protected $templateExtension = 'php';
+
+    public function __construct(
+        ITrackingItemBuilder $trackingItemBuilder,
+        EngineInterface $templatingEngine,
+        string $templateExtension = 'php'
+    )
     {
         $this->trackingItemBuilder = $trackingItemBuilder;
         $this->templatingEngine    = $templatingEngine;
+        $this->templateExtension   = $templateExtension;
     }
 
-    public function getTrackingItemBuilder(): ITrackingItemBuilder
+    public function setTemplateSuffix(string $suffix)
     {
-        return $this->trackingItemBuilder;
+        $this->templateExtension = $suffix;
     }
 
-    abstract protected function getViewScriptPrefix(): string;
+    abstract protected function getTemplatePrefix(): string;
 
-    protected function getViewScript(string $name)
+    protected function getTemplatePath(string $name)
     {
         return sprintf(
-            'PimcoreEcommerceFrameworkBundle:Tracking/%s:%s.js.php',
-            $this->getViewScriptPrefix(),
-            $name
+            'PimcoreEcommerceFrameworkBundle:Tracking/%s:%s.js.%s',
+            $this->getTemplatePrefix(),
+            $name,
+            $this->templateExtension
+        );
+    }
+
+    protected function renderTemplate(string $name, array $parameters): string
+    {
+        return $this->templatingEngine->render(
+            $this->getTemplatePath($name),
+            $parameters
         );
     }
 
