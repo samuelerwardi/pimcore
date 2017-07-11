@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -23,10 +26,7 @@ use Pimcore\Google\Analytics;
 
 class Ecommerce extends Tracker implements ICheckoutComplete
 {
-    /**
-     * @return string
-     */
-    protected function getViewScriptPrefix()
+    protected function getViewScriptPrefix(): string
     {
         return 'analytics/classic';
     }
@@ -45,7 +45,8 @@ class Ecommerce extends Tracker implements ICheckoutComplete
         $parameterBag['items'] = $items;
         $parameterBag['calls'] = $this->buildCheckoutCompleteCalls($transaction, $items);
 
-        $result = $this->renderer->render($this->getViewScript('checkout_complete'), $parameterBag);
+        $result = $this->templatingEngine->render($this->getViewScript('checkout_complete'), $parameterBag);
+
         Analytics::addAdditionalCode($result, 'beforeEnd');
     }
 
@@ -53,9 +54,9 @@ class Ecommerce extends Tracker implements ICheckoutComplete
      * @param Transaction $transaction
      * @param ProductAction[] $items
      *
-     * @return mixed
+     * @return array
      */
-    protected function buildCheckoutCompleteCalls(Transaction $transaction, array $items)
+    protected function buildCheckoutCompleteCalls(Transaction $transaction, array $items): array
     {
         $calls = [
             $this->transformTransaction($transaction)
@@ -77,7 +78,7 @@ class Ecommerce extends Tracker implements ICheckoutComplete
      *
      * @return array
      */
-    protected function transformTransaction(Transaction $transaction)
+    protected function transformTransaction(Transaction $transaction): array
     {
         return [
             '_addTrans',
@@ -96,7 +97,7 @@ class Ecommerce extends Tracker implements ICheckoutComplete
      *
      * @return array
      */
-    protected function transformProductAction(ProductAction $item)
+    protected function transformProductAction(ProductAction $item): array
     {
         return [
             '_addItem',

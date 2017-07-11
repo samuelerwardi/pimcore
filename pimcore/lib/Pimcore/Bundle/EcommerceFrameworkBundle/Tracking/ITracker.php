@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -18,18 +21,9 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
 interface ITracker
 {
-    /**
-     * @param ITrackingItemBuilder $trackingItemBuilder
-     */
-    public function __construct(ITrackingItemBuilder $trackingItemBuilder, EngineInterface $renderer);
+    public function __construct(ITrackingItemBuilder $trackingItemBuilder, EngineInterface $templatingEngine);
 
-    /**
-     * @return ITrackingItemBuilder
-     */
-    public function getTrackingItemBuilder();
+    public function getTrackingItemBuilder(): ITrackingItemBuilder;
 
-    /**
-     * @return mixed
-     */
     public function includeDependencies();
 }

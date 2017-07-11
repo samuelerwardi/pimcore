@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -16,34 +19,54 @@ namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
 class Transaction extends AbstractData
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $affiliation;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $total;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $subTotal;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $tax;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $shipping;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $coupon;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $list;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $step;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $option;
 
     /**

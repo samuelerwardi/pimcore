@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -16,25 +19,39 @@ namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
 abstract class AbstractProductData extends AbstractData
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $transactionId;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $name;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $brand;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $categories;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $variant;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $position;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $price;
 
     /**

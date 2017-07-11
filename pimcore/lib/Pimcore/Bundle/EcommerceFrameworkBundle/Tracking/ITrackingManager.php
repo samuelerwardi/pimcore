@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -14,7 +17,13 @@
 
 namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
-interface ITrackingManager extends IProductImpression, IProductView, ICheckoutStep, ICheckoutComplete, ICheckout,
-    IProductActionAdd, IProductActionRemove
+interface ITrackingManager extends
+    IProductImpression,
+    IProductView,
+    ICheckoutStep,
+    ICheckoutComplete,
+    ICheckout,
+    IProductActionAdd,
+    IProductActionRemove
 {
 }

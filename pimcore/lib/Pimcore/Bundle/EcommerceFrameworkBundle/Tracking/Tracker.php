@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -19,64 +22,57 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
 abstract class Tracker implements ITracker
 {
-    /** @var ITrackingItemBuilder */
+    /**
+     * @var ITrackingItemBuilder
+     */
     protected $trackingItemBuilder;
+
+    /**
+     * @var EngineInterface
+     */
+    protected $templatingEngine;
+
+    /**
+     * @var bool
+     */
+    private $dependenciesIncluded = false;
 
     /**
      * @var array
      */
     protected $dependencies = [];
 
-    /**
-     * @var EngineInterface
-     */
-    protected $renderer;
-
-    /**
-     * @param ITrackingItemBuilder $trackingItemBuilder
-     */
-    public function __construct(ITrackingItemBuilder $trackingItemBuilder, EngineInterface $renderer)
+    public function __construct(ITrackingItemBuilder $trackingItemBuilder, EngineInterface $templatingEngine)
     {
         $this->trackingItemBuilder = $trackingItemBuilder;
-        $this->renderer = $renderer;
+        $this->templatingEngine    = $templatingEngine;
     }
 
-    /**
-     * @return ITrackingItemBuilder
-     */
-    public function getTrackingItemBuilder()
+    public function getTrackingItemBuilder(): ITrackingItemBuilder
     {
         return $this->trackingItemBuilder;
     }
 
-    /**
-     * View script prefix
-     *
-     * @return mixed
-     */
-    abstract protected function getViewScriptPrefix();
+    abstract protected function getViewScriptPrefix(): string;
 
-    /**
-     * Get path to view script
-     *
-     * @param $name
-     *
-     * @return string
-     */
-    protected function getViewScript($name)
+    protected function getViewScript(string $name)
     {
-        return sprintf('PimcoreEcommerceFrameworkBundle:Tracking/%s:%s.js.php', $this->getViewScriptPrefix(), $name);
+        return sprintf(
+            'PimcoreEcommerceFrameworkBundle:Tracking/%s:%s.js.php',
+            $this->getViewScriptPrefix(),
+            $name
+        );
     }
 
     /**
      * Remove null values from an object, keep protected keys in any case
      *
-     * @param $data
+     * @param array $data
      * @param array $protectedKeys
      *
      * @return array
      */
-    protected function filterNullValues($data, $protectedKeys = [])
+    protected function filterNullValues(array $data, array $protectedKeys = []): array
     {
         $result = [];
         foreach ($data as $key => $value) {
@@ -89,21 +85,24 @@ abstract class Tracker implements ITracker
         return $result;
     }
 
-    private $dependenciesIncluded = false;
-
     /**
      * Include all defined google dependencies of this tracker
      * and only include them once in the script.
      */
     public function includeDependencies()
     {
-        if (!$this->dependenciesIncluded) {
-            if ($dependencies = $this->dependencies) {
-                foreach ($dependencies as $dependency) {
-                    Analytics::addAdditionalCode("ga('require', '" . $dependency . "')", 'beforePageview');
-                }
-            }
-            $this->dependenciesIncluded = true;
+        if ($this->dependenciesIncluded) {
+            return;
         }
+
+        if (0 === count($this->dependencies)) {
+            return;
+        }
+
+        foreach ($this->dependencies as $dependency) {
+            Analytics::addAdditionalCode("ga('require', '" . $dependency . "')", 'beforePageview');
+        }
+
+        $this->dependenciesIncluded = true;
     }
 }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -14,12 +17,14 @@
 
 namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
+use Pimcore\Bundle\EcommerceFrameworkBundle\Model\IProduct;
+
 interface IProductView
 {
     /**
      * Track product view
      *
-     * @param \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IProduct $product
+     * @param IProduct $product
      */
-    public function trackProductView(\Pimcore\Bundle\EcommerceFrameworkBundle\Model\IProduct $product);
+    public function trackProductView(IProduct $product);
 }

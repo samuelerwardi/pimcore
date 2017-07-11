@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -14,18 +17,18 @@
 
 namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
+use Pimcore\Bundle\EcommerceFrameworkBundle\CartManager\ICart;
+use Pimcore\Bundle\EcommerceFrameworkBundle\CheckoutManager\ICheckoutStep as CheckoutManagerICheckoutStep;
+
 interface ICheckoutStep
 {
     /**
      * Track checkout step
      *
-     * @param \Pimcore\Bundle\EcommerceFrameworkBundle\CheckoutManager\ICheckoutStep $step
-     * @param \Pimcore\Bundle\EcommerceFrameworkBundle\CartManager\ICart         $cart
-     * @param null                                $stepNumber
-     *
-     * @return
+     * @param CheckoutManagerICheckoutStep $step
+     * @param ICart $cart
+     * @param null $stepNumber
+     * @param null $checkoutOption
      */
-    public function trackCheckoutStep(\Pimcore\Bundle\EcommerceFrameworkBundle\CheckoutManager\ICheckoutStep $step,
-                                      \Pimcore\Bundle\EcommerceFrameworkBundle\CartManager\ICart $cart,
-                                      $stepNumber = null, $checkoutOption = null);
+    public function trackCheckoutStep(CheckoutManagerICheckoutStep $step, ICart $cart, $stepNumber = null, $checkoutOption = null);
 }

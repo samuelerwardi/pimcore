@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -14,12 +17,15 @@
 
 namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
+use Pimcore\Bundle\EcommerceFrameworkBundle\Model\IProduct;
+
 interface IProductActionRemove
 {
     /**
      * Track product remove from cart
      *
-     * @param \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IProduct $product
+     * @param IProduct $product
+     * @param int|float $quantity
      */
-    public function trackProductActionRemove(\Pimcore\Bundle\EcommerceFrameworkBundle\Model\IProduct $product, $quantity = 1);
+    public function trackProductActionRemove(IProduct $product, $quantity = 1);
 }

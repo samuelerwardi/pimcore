@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -14,13 +17,15 @@
 
 namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
+use Pimcore\Bundle\EcommerceFrameworkBundle\Model\IProduct;
+
 interface IProductActionAdd
 {
     /**
      * Track product action add
      *
-     * @param \Pimcore\Bundle\EcommerceFrameworkBundle\Model\IProduct $product
-     * @param int $quantity
+     * @param IProduct $product
+     * @param int|float $quantity
      */
-    public function trackProductActionAdd(\Pimcore\Bundle\EcommerceFrameworkBundle\Model\IProduct $product, $quantity = 1);
+    public function trackProductActionAdd(IProduct $product, $quantity = 1);
 }

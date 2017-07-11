@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Pimcore
  *
@@ -16,7 +19,9 @@ namespace Pimcore\Bundle\EcommerceFrameworkBundle\Tracking;
 
 abstract class AbstractData implements \JsonSerializable
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $id;
 
     /**
@@ -43,11 +48,11 @@ abstract class AbstractData implements \JsonSerializable
      * Merge values into properties
      *
      * @param array $data
-     * @param bool|false $overwrite
+     * @param bool $overwrite
      *
      * @return $this
      */
-    public function mergeValues(array $data, $overwrite = false)
+    public function mergeValues(array $data, bool $overwrite = false)
     {
         foreach ($data as $key => $value) {
             $getter = 'get' . ucfirst($key);
@@ -72,7 +77,7 @@ abstract class AbstractData implements \JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $json = [];
         foreach ($this as $key => $value) {
