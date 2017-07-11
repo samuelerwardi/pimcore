@@ -13,5 +13,7 @@
  */
 ?>
 
-ga('ec:setAction', 'checkout_option', <?= json_encode($this->actionData) ?>);
-ga('send', 'event', 'Checkout', 'Option');
+<?php foreach ($this->dependencies as $dependency): ?>
+ga('require', '<?= $dependency ?>');
+
+<?php endforeach; ?>

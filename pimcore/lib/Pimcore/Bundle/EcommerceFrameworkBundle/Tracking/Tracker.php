@@ -32,16 +32,6 @@ abstract class Tracker implements ITracker
      */
     protected $templatingEngine;
 
-    /**
-     * @var bool
-     */
-    private $dependenciesIncluded = false;
-
-    /**
-     * @var array
-     */
-    protected $dependencies = [];
-
     public function __construct(ITrackingItemBuilder $trackingItemBuilder, EngineInterface $templatingEngine)
     {
         $this->trackingItemBuilder = $trackingItemBuilder;
@@ -83,26 +73,5 @@ abstract class Tracker implements ITracker
         }
 
         return $result;
-    }
-
-    /**
-     * Include all defined google dependencies of this tracker
-     * and only include them once in the script.
-     */
-    public function includeDependencies()
-    {
-        if ($this->dependenciesIncluded) {
-            return;
-        }
-
-        if (0 === count($this->dependencies)) {
-            return;
-        }
-
-        foreach ($this->dependencies as $dependency) {
-            Analytics::addAdditionalCode("ga('require', '" . $dependency . "')", 'beforePageview');
-        }
-
-        $this->dependenciesIncluded = true;
     }
 }

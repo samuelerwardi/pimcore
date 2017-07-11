@@ -24,6 +24,4 @@ interface ITracker
     public function __construct(ITrackingItemBuilder $trackingItemBuilder, EngineInterface $templatingEngine);
 
     public function getTrackingItemBuilder(): ITrackingItemBuilder;
-
-    public function includeDependencies();
 }
