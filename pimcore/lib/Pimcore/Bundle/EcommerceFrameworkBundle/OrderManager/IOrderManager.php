@@ -17,35 +17,36 @@ namespace Pimcore\Bundle\EcommerceFrameworkBundle\OrderManager;
 use Pimcore\Bundle\EcommerceFrameworkBundle\CartManager\ICart;
 use Pimcore\Bundle\EcommerceFrameworkBundle\Model\AbstractOrder;
 use Pimcore\Bundle\EcommerceFrameworkBundle\PaymentManager\IStatus;
+use Pimcore\Model\Object\Folder;
 
 interface IOrderManager
 {
     /**
      * @return IOrderList
      */
-    public function createOrderList();
+    public function createOrderList(): IOrderList;
 
     /**
      * @param AbstractOrder $order
      *
      * @return IOrderAgent
      */
-    public function createOrderAgent(AbstractOrder $order);
+    public function createOrderAgent(AbstractOrder $order): IOrderAgent;
 
     /**
-     * @param int $id
+     * @param int|Folder $orderParentFolder
      */
-    public function setParentOrderFolder($id);
-
-    /**
-     * @param string $classname
-     */
-    public function setOrderClass($classname);
+    public function setParentOrderFolder($orderParentFolder);
 
     /**
      * @param string $classname
      */
-    public function setOrderItemClass($classname);
+    public function setOrderClass(string $classname);
+
+    /**
+     * @param string $classname
+     */
+    public function setOrderItemClass(string $classname);
 
     /**
      * Looks if order object for given cart already exists, otherwise creates it
@@ -66,7 +67,7 @@ interface IOrderManager
     public function getOrderFromCart(ICart $cart);
 
     /**
-     * gets order based on given payment status
+     * Returns order based on given payment status
      *
      * @param IStatus $paymentStatus
      *
@@ -75,7 +76,7 @@ interface IOrderManager
     public function getOrderByPaymentStatus(IStatus $paymentStatus);
 
     /**
-     * Build order listing
+     * Builds order listing
      *
      * @return \Pimcore\Model\Object\Listing\Concrete
      *
