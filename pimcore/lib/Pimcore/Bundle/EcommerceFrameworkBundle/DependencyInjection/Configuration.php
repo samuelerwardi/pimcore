@@ -26,6 +26,7 @@ use Pimcore\Bundle\EcommerceFrameworkBundle\OrderManager\Order\AgentFactory;
 use Pimcore\Bundle\EcommerceFrameworkBundle\OrderManager\Order\Listing;
 use Pimcore\Bundle\EcommerceFrameworkBundle\OrderManager\OrderManager;
 use Pimcore\Bundle\EcommerceFrameworkBundle\SessionEnvironment;
+use Pimcore\Bundle\EcommerceFrameworkBundle\Tools\Config\Processor\TenantProcessor;
 use Pimcore\Bundle\EcommerceFrameworkBundle\Tracking\TrackingManager;
 use Pimcore\Bundle\EcommerceFrameworkBundle\VoucherService\DefaultService;
 use Pimcore\Bundle\EcommerceFrameworkBundle\VoucherService\TokenManager\TokenManagerFactory;
@@ -37,6 +38,16 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class Configuration implements ConfigurationInterface
 {
+    /**
+     * @var TenantProcessor
+     */
+    private $tenantProcessor;
+
+    public function __construct()
+    {
+        $this->tenantProcessor = new TenantProcessor();
+    }
+
     /**
      * @inheritDoc
      */
@@ -119,7 +130,7 @@ class Configuration implements ConfigurationInterface
                             $v = [];
                         }
 
-                        return $this->mergeTenantConfig($v);
+                        return $this->tenantProcessor->mergeTenantConfig($v);
                     })
                     ->end()
                     ->prototype('array')
@@ -194,7 +205,7 @@ class Configuration implements ConfigurationInterface
                             $v = [];
                         }
 
-                        return $this->mergeTenantConfig($v);
+                        return $this->tenantProcessor->mergeTenantConfig($v);
                     })
                     ->end()
                     ->prototype('array')
