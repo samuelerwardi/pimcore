@@ -272,6 +272,7 @@ class PayPal implements IPayment
     public function executeCredit(IPrice $price, $reference, $transactionId)
     {
         // TODO: Implement executeCredit() method.
+        throw new \Exception('not implemented');
     }
 
     /**
