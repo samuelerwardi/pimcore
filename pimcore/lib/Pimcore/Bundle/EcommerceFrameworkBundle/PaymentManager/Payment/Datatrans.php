@@ -25,6 +25,7 @@ use Pimcore\Config\Config;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Forms;
 
 // TODO refine how payment amounts are transformed for API
@@ -111,9 +112,9 @@ class Datatrans implements IPayment
      * start payment
      *
      * @param IPrice $price
-     * @param array                       $config
+     * @param array $config
      *
-     * @return \Symfony\Component\Form\FormBuilderInterface
+     * @return FormBuilderInterface
      *
      * @throws \Exception
      *
@@ -123,8 +124,16 @@ class Datatrans implements IPayment
     public function initPayment(IPrice $price, array $config)
     {
         // check params
-        $required = [  'successUrl' => null, 'errorUrl' => null, 'cancelUrl' => null, 'refno' => null, 'useAlias' => null, 'reqtype' => null, 'language' => null
+        $required = [
+            'successUrl' => null,
+            'errorUrl'   => null,
+            'cancelUrl'  => null,
+            'refno'      => null,
+            'useAlias'   => null,
+            'reqtype'    => null,
+            'language'   => null
         ];
+
         $config = array_intersect_key($config, $required);
 
         if (count($required) != count($config)) {
@@ -143,8 +152,12 @@ class Datatrans implements IPayment
             $sign = $this->sign;
         } else {
             $data = [
-                'merchantId' => $this->merchantId, 'amount' => $paymentData['amount'], 'currency' => $paymentData['currency'], 'refno' => $config['refno']
+                'merchantId' => $this->merchantId,
+                'amount'     => $paymentData['amount'],
+                'currency'   => $paymentData['currency'],
+                'refno'      => $config['refno']
             ];
+
             $sign = hash_hmac('SHA256', implode('', $data), hex2bin($this->sign));
         }
 
@@ -239,7 +252,14 @@ class Datatrans implements IPayment
         // check required fields
         $required = $this->getRequiredResponseFields($response);
         $authorizedData = [
-            'aliasCC' => null, 'expm' => null, 'expy' => null, 'reqtype' => null, 'uppTransactionId' => null, 'amount' => null, 'currency' => null, 'refno' => null
+            'aliasCC'          => null,
+            'expm'             => null,
+            'expy'             => null,
+            'reqtype'          => null,
+            'uppTransactionId' => null,
+            'amount'           => null,
+            'currency'         => null,
+            'refno'            => null
         ];
 
         // check fields
@@ -271,8 +291,13 @@ class Datatrans implements IPayment
         }
 
         return new Status(
-            $response['refno'], $response['uppTransactionId'], $message, $paymentState, [
-                'datatrans_amount' => (string)$price, 'datatrans_acqAuthorizationCode' => $response['acqAuthorizationCode'], 'datatrans_response' => $response
+            $response['refno'],
+            $response['uppTransactionId'],
+            $message,
+            $paymentState, [
+                'datatrans_amount'               => (string)$price,
+                'datatrans_acqAuthorizationCode' => $response['acqAuthorizationCode'],
+                'datatrans_response'             => $response
             ]
         );
     }
@@ -324,12 +349,7 @@ class Datatrans implements IPayment
     }
 
     /**
-     * @param IPrice $price
-     * @param string $reference
-     *
-     * @return Status|IStatus
-     *
-     * @throws \Exception
+     * @inheritdoc
      */
     public function executeDebit(IPrice $price = null, $reference = null)
     {
@@ -341,7 +361,11 @@ class Datatrans implements IPayment
 
             // complete authorized payment
             $xml = $this->xmlSettlement(
-                self::TRANS_TYPE_DEBIT, $this->authorizedData['amount'], $this->authorizedData['currency'], $reference ?: $this->authorizedData['refno'], $this->authorizedData['uppTransactionId']
+                self::TRANS_TYPE_DEBIT,
+                $this->authorizedData['amount'],
+                $this->authorizedData['currency'],
+                $reference ?: $this->authorizedData['refno'],
+                $this->authorizedData['uppTransactionId']
             );
 
             $uppTransactionId = $this->authorizedData['uppTransactionId'];
@@ -380,8 +404,13 @@ class Datatrans implements IPayment
 
         // create and return status
         $status = new Status(
-            (string)$transaction->attributes()['refno'], (string)$response->uppTransactionId ?: $uppTransactionId, $message, $paymentState, [
-                'datatrans_amount' => (string)$price, 'datatrans_responseXML' => $transaction->asXML(), 'datatrans_acqAuthorizationCode' => (string)$response->acqAuthorizationCode
+            (string)$transaction->attributes()['refno'],
+            (string)$response->uppTransactionId ?: $uppTransactionId,
+            $message,
+            $paymentState, [
+                'datatrans_amount'               => (string)$price,
+                'datatrans_responseXML'          => $transaction->asXML(),
+                'datatrans_acqAuthorizationCode' => (string)$response->acqAuthorizationCode
             ]
         );
 
@@ -389,13 +418,7 @@ class Datatrans implements IPayment
     }
 
     /**
-     * gutschrift ausführen
-     *
-     * @param IPrice $price
-     * @param string $reference
-     * @param string $transactionId
-     *
-     * @return IStatus
+     * @inheritdoc
      */
     public function executeCredit(IPrice $price, $reference, $transactionId)
     {
@@ -405,7 +428,11 @@ class Datatrans implements IPayment
 
             // complete authorized payment
             $xml = $this->xmlSettlement(
-                self::TRANS_TYPE_CREDIT, $this->authorizedData['amount'], $this->authorizedData['currency'], $this->authorizedData['refno'], $this->authorizedData['uppTransactionId']
+                self::TRANS_TYPE_CREDIT,
+                $this->authorizedData['amount'],
+                $this->authorizedData['currency'],
+                $this->authorizedData['refno'],
+                $this->authorizedData['uppTransactionId']
             );
         } else {
             // complete authorized payment
@@ -435,8 +462,13 @@ class Datatrans implements IPayment
 
         // create and return status
         $status = new Status(
-            (string)$transaction->attributes()['refno'], (string)$response->uppTransactionId, $message, $paymentState, [
-                'datatrans_amount' => (string)$price, 'datatrans_responseXML' => $transaction->asXML(), 'datatrans_acqAuthorizationCode' => (string)$response->acqAuthorizationCode
+            (string)$transaction->attributes()['refno'],
+            (string)$response->uppTransactionId,
+            $message,
+            $paymentState, [
+                'datatrans_amount'               => (string)$price,
+                'datatrans_responseXML'          => $transaction->asXML(),
+                'datatrans_acqAuthorizationCode' => (string)$response->acqAuthorizationCode
             ]
         );
 
@@ -553,7 +585,18 @@ class Datatrans implements IPayment
 </authorizationService>
 XML;
 
-        $xml = sprintf($xml, $this->merchantId, $this->sign, $refno, $reqType, $transType, $amount, $currency, $aliasCC, $expireMonth, $expireYear
+        $xml = sprintf(
+            $xml,
+            $this->merchantId,
+            $this->sign,
+            $refno,
+            $reqType,
+            $transType,
+            $amount,
+            $currency,
+            $aliasCC,
+            $expireMonth,
+            $expireYear
         );
 
         return $this->xmlRequest($this->endpoint['xmlAuthorize'], $xml);
@@ -594,7 +637,15 @@ XML;
 </paymentService>
 XML;
 
-        $xml = sprintf($xml, $this->merchantId, $reference, $transactionId, $amount, $currency, $transType, $this->sign
+        $xml = sprintf(
+            $xml,
+            $this->merchantId,
+            $reference,
+            $transactionId,
+            $amount,
+            $currency,
+            $transType,
+            $this->sign
         );
 
         return $this->xmlRequest($this->endpoint['xmlProcessor'], $xml);
